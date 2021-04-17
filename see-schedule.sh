@@ -1,4 +1,5 @@
 #!/bin/bash 
+#Show Approximate Slot Timestamps
 
 pushd `dirname ${0}` > /dev/null || exit 1
 source ./env.sh
@@ -36,7 +37,7 @@ CURRENT_SLOT=`echo -e "$EPOCH_INFO" | grep "Slot: " | cut -d ':' -f 2 | cut -d '
 EPOCH_LEN_TEXT=`echo -e "$EPOCH_INFO" | grep "Completed Time" | cut -d '/' -f 2 | cut -d '(' -f 1`
 EPOCH_LEN_SEC=$(durationToSeconds "${EPOCH_LEN_TEXT}")
 SLOT_LEN_SEC=`echo "scale=10; ${EPOCH_LEN_SEC}/(${LAST_SLOT}-${FIRST_SLOT})" | bc`
-START_SEC=`echo "" | bc`
+
 echo "$EPOCH_INFO"
 echo
 
@@ -46,12 +47,31 @@ function slotDate () {
   local DELTA=`echo "(${SLOT_LEN_SEC}*${SLOT_DIFF})/1" | bc`
   local SLOT_DATE_SEC=`echo "${NOW_SEC} + ${DELTA}" | bc`
   local DATE_TEXT=`date --iso-8601=seconds -d @${SLOT_DATE_SEC}`
-  echo $DATE_TEXT
+  echo "${DATE_TEXT}"
 }
 
-echo start `slotDate ${FIRST_SLOT}`
-echo "${SCHEDULE}" | sed 's/|/ /' | awk '{print $1}' | while read in; do echo "$in `slotDate $in`"; done
-echo end `slotDate ${LAST_SLOT}`
+CYAN='\033[0;36m'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NOCOLOR='\033[0m'
+
+function slotColor() {
+  local SLOT=${1}
+  local COLOR=`
+    if (( ${SLOT} <= ${CURRENT_SLOT} )); then
+      echo ${RED}
+    else
+      echo ${GREEN}
+    fi`
+  echo -e "${COLOR}"
+}
+
+echo -e "${CYAN}Start `slotDate ${FIRST_SLOT}`${NOCOLOR}"
+echo "${SCHEDULE}" | sed 's/|/ /' | awk '{print $1}' | while read in; do
+COLOR=`slotColor $in`
+echo -e "${COLOR}$in `slotDate $in`${NOCOLOR}";
+done
+echo -e "${CYAN}End `slotDate ${LAST_SLOT}`${NOCOLOR}"
 
 popd > /dev/null || exit 1
 
