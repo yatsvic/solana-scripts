@@ -27,6 +27,7 @@ function durationToSeconds () {
   set +f
 }
 
+NOW=`date --iso-8601=seconds`
 NOW_SEC=`date +%s`
 EPOCH_INFO=`solana --url=localhost epoch-info`
 SCHEDULE=`solana --url=localhost leader-schedule | grep ${SOLANA_VALIDATOR_PUB_KEY}`
@@ -37,9 +38,7 @@ CURRENT_SLOT=`echo -e "$EPOCH_INFO" | grep "Slot: " | cut -d ':' -f 2 | cut -d '
 EPOCH_LEN_TEXT=`echo -e "$EPOCH_INFO" | grep "Completed Time" | cut -d '/' -f 2 | cut -d '(' -f 1`
 EPOCH_LEN_SEC=$(durationToSeconds "${EPOCH_LEN_TEXT}")
 SLOT_LEN_SEC=`echo "scale=10; ${EPOCH_LEN_SEC}/(${LAST_SLOT}-${FIRST_SLOT})" | bc`
-
-echo "$EPOCH_INFO"
-echo
+SLOT_PER_SEC=`echo "scale=10; 1.0/${SLOT_LEN_SEC}" | bc`
 
 function slotDate () {
   local SLOT=${1}
@@ -66,12 +65,18 @@ function slotColor() {
   echo -e "${COLOR}"
 }
 
-echo -e "${CYAN}Start `slotDate ${FIRST_SLOT}`${NOCOLOR}"
+echo "${NOW}"
+echo "Speed: ${SLOT_PER_SEC} slots per second"
+echo " Time: ${SLOT_LEN_SEC} seconds per slot"
+echo
+echo "${EPOCH_INFO}"
+echo
+echo -e "${CYAN}Start:   `slotDate ${FIRST_SLOT}`${NOCOLOR}"
 echo "${SCHEDULE}" | sed 's/|/ /' | awk '{print $1}' | while read in; do
-COLOR=`slotColor $in`
-echo -e "${COLOR}$in `slotDate $in`${NOCOLOR}";
+COLOR=`slotColor ${in}`
+echo -e "${COLOR}$in `slotDate ${in}`${NOCOLOR}";
 done
-echo -e "${CYAN}End `slotDate ${LAST_SLOT}`${NOCOLOR}"
+echo -e "${CYAN}End:     `slotDate ${LAST_SLOT}`${NOCOLOR}"
 
 popd > /dev/null || exit 1
 
