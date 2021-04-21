@@ -39,6 +39,9 @@ EPOCH_LEN_TEXT=`echo -e "$EPOCH_INFO" | grep "Completed Time" | cut -d '/' -f 2 
 EPOCH_LEN_SEC=$(durationToSeconds "${EPOCH_LEN_TEXT}")
 SLOT_LEN_SEC=`echo "scale=10; ${EPOCH_LEN_SEC}/(${LAST_SLOT}-${FIRST_SLOT})" | bc`
 SLOT_PER_SEC=`echo "scale=10; 1.0/${SLOT_LEN_SEC}" | bc`
+COMPLETED_SLOTS=`echo -e "${SCHEDULE}" | awk -v cs="${CURRENT_SLOT}" '{ if ($1 <= cs) { print }}' | wc -l`
+REMAINING_SLOTS=`echo -e "${SCHEDULE}" | awk -v cs="${CURRENT_SLOT}" '{ if ($1 > cs) { print }}' | wc -l`
+TOTAL_SLOTS=`echo -e "${SCHEDULE}" | wc -l`
 
 function slotDate () {
   local SLOT=${1}
@@ -68,6 +71,7 @@ function slotColor() {
 echo "${NOW}"
 echo "Speed: ${SLOT_PER_SEC} slots per second"
 echo " Time: ${SLOT_LEN_SEC} seconds per slot"
+echo "My Slots ${COMPLETED_SLOTS}/${TOTAL_SLOTS} (${REMAINING_SLOTS} remaining)"
 echo
 echo "${EPOCH_INFO}"
 echo
