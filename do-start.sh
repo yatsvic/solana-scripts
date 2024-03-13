@@ -1,4 +1,3 @@
 #!/bin/bash
 
-systemctl start solana
-
+sudo systemctl start solana

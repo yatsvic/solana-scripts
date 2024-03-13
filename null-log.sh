@@ -1,5 +1,6 @@
 #!/bin/bash
+
 pushd $(dirname ${0}) > /dev/null || exit 1
 source ./env.sh
-solana --url=localhost stakes -um ${SOLANA_VOTE_PUB_KEY}
+cat /dev/null > ${SOLANA_LOG_DIR}/solana-validator.log
 popd > /dev/null || exit 1

@@ -1,4 +1,3 @@
 #!/bin/bash
 
-systemctl restart solana
-
+sudo systemctl restart solana

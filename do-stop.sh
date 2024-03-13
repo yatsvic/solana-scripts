@@ -1,4 +1,3 @@
 #!/bin/bash
 
-systemctl stop solana
-
+sudo systemctl stop solana

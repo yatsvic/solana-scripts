@@ -1,5 +1,8 @@
 #!/bin/bash
 pushd $(dirname ${0}) > /dev/null || exit 1
-source ./env.sh
-solana --url=localhost stakes -um ${SOLANA_VOTE_PUB_KEY}
+./do-stop.sh
+./do-clean.sh
+./remove-snapshots.sh
+./find-snapshot.sh
+./do-start.sh
 popd > /dev/null || exit 1

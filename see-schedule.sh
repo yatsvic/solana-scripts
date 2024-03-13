@@ -1,7 +1,7 @@
 #!/bin/bash 
 #Show Approximate Slot Timestamps
 
-pushd `dirname ${0}` > /dev/null || exit 1
+pushd $(dirname ${0}) > /dev/null || exit 1
 source ./env.sh
 
 #from https://stackoverflow.com/a/58617630OD
@@ -83,4 +83,3 @@ done
 echo -e "${CYAN}End:     `slotDate ${LAST_SLOT}`${NOCOLOR}"
 
 popd > /dev/null || exit 1
-
