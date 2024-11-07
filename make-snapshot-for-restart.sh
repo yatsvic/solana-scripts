@@ -8,11 +8,12 @@ fi
 export SLOT=${1}
 pushd $(dirname ${0}) > /dev/null || exit 1
 source ./env.sh
-solana-ledger-tool \
+agave-ledger-tool \
   --ledger ${SOLANA_LEDGER_DIR} \
+  create-snapshot \
   --snapshot-archive-path ${SOLANA_SNAPSHOTS_DIR} \
-  create-snapshot ${SLOT} ${SOLANA_SNAPSHOTS_DIR} \
   --hard-fork ${SLOT} \
-#  --destake-vote-account ***
+  -- ${SLOT} ${SOLANA_SNAPSHOTS_DIR} \
 
 popd > /dev/null || exit 1
+

@@ -5,4 +5,5 @@ if [ $# -eq 0 ]; then
  exit 1
 fi
 
-solana-install init ${1}
+agave-install init ${1}
+
